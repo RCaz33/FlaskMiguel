@@ -13,6 +13,9 @@ class User(db.Model):
                                              unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
+    posts: so.WriteOnlyMapped['Post'] = so.relationship(                    # so.relationship to connect to Post DB
+    back_populates='author')                                                # back_populates arguments reference the name of the relationship attribute on the other side
+                                                                            # Instead of so.Mapped, we use so.WriteOnlyMapped, which defines posts as a collection type with Post objects inside
     def __repr__(self):
         return f'<User {self.username}>'
     
@@ -25,7 +28,7 @@ class Post(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),
                                                index=True)
 
-    author: so.Mapped[User] = so.relationship(back_populates='posts')
+    author: so.Mapped[User] = so.relationship(back_populates='posts')       # so.relationship to connect to User DB
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
